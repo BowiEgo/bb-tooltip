@@ -1,0 +1,56 @@
+{
+  "name": "bb-tooltip",
+  "version": "1.0.0",
+  "description": "An Vue tooltip UI component used for Mobile or Desktop application.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack-dev-server --config webpack.config.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BowiEgo/bb-tooltip.git"
+  },
+  "keywords": [
+    "vue",
+    "tooltip"
+  ],
+  "author": "bowiego",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BowiEgo/bb-tooltip/issues"
+  },
+  "homepage": "https://github.com/BowiEgo/bb-tooltip#readme",
+  "peerDependencies": {
+    "@vue/compiler-sfc": "^3.0.2",
+    "vue": "^3.0.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/plugin-proposal-export-default-from": "^7.12.1",
+    "@babel/plugin-proposal-object-rest-spread": "^7.12.1",
+    "@babel/plugin-proposal-optional-chaining": "^7.12.1",
+    "@babel/plugin-transform-object-assign": "^7.12.1",
+    "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.12.1",
+    "@vue/babel-plugin-jsx": "^1.0.0-rc.3",
+    "babel-loader": "^8.1.0",
+    "babel-plugin-import": "^1.13.1",
+    "css-loader": "^5.0.0",
+    "html-webpack-plugin": "^4.5.0",
+    "less": "^3.12.2",
+    "less-loader": "^7.0.2",
+    "marked": "^1.2.0",
+    "mini-css-extract-plugin": "^1.1.0",
+    "style-loader": "^2.0.0",
+    "vue-loader": "16.0.0-beta.5",
+    "webpack": "^4.28.4",
+    "webpack-cli": "^3.2.1",
+    "webpack-dashboard": "^3.2.1",
+    "webpack-dev-server": "^3.1.14"
+  },
+  "dependencies": {
+    "add-dom-event-listener": "^1.1.0"
+  }
+}

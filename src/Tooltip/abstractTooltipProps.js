@@ -1,0 +1,37 @@
+import PropTypes from '../util/vue-types';
+const triggerType = PropTypes.oneOf(['hover', 'focus', 'click', 'contextmenu']);
+export default () => ({
+  trigger: PropTypes.oneOfType([triggerType, PropTypes.arrayOf(triggerType)]).def('hover'),
+  visible: PropTypes.bool,
+  defaultVisible: PropTypes.bool,
+  placement: PropTypes.oneOf([
+    'top',
+    'left',
+    'right',
+    'bottom',
+    'topLeft',
+    'topRight',
+    'bottomLeft',
+    'bottomRight',
+    'leftTop',
+    'leftBottom',
+    'rightTop',
+    'rightBottom',
+  ]).def('bottom'),
+  transitionName: PropTypes.string.def('zoom-big-fast'),
+
+  overlayStyle: PropTypes.object.def(() => ({})),
+  overlayClassName: PropTypes.string,
+  prefixCls: PropTypes.string.def('tooltip'),
+  mouseEnterDelay: PropTypes.number.def(0.1),
+  mouseLeaveDelay: PropTypes.number.def(0.1),
+  arrowPointAtCenter: PropTypes.bool.def(false),
+  arrowWidth: PropTypes.number.def(5),
+  arrowShadowWidth: PropTypes.number.def(3),
+  autoAdjustOverflow: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]).def(true),
+  destroyTooltipOnHide: PropTypes.bool.def(false),
+  align: PropTypes.object.def(() => ({})),
+  children: PropTypes.any,
+  onVisibleChange: PropTypes.func,
+  'onUpdate:visible': PropTypes.func,
+});
