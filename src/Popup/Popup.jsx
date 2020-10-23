@@ -1,9 +1,17 @@
 import PropTypes from '../util/vue-types';
+import animate from '../util/css-animation';
+import { Transition } from 'vue';
 
 const root = window;
+const originOffset = {
+  top: 0,
+  left: 0,
+};
 
 export default {
   name: 'Popup',
+
+  inheritAttrs: false,
 
   props: {
     getContainer: PropTypes.func,
@@ -14,73 +22,35 @@ export default {
     placement: PropTypes.string.def('top'),
     arrowWidth: PropTypes.number,
     arrowShadowWidth: PropTypes.number,
+    offset: PropTypes.number,
+    transitionName: PropTypes.string,
   },
 
   watch: {
     visible(val) {
       this.$nextTick(() => {
-        this.applyStyle(this.getOffset(), this.getArrowOffset());
+        if (!val) return;
+        this.applyStyle(this.getReferenceOffset(), this.getArrowOffset());
       });
     },
   },
 
   methods: {
-    getOffset() {
+    getReferenceOffset() {
       const { $props: props } = this;
-      const { placement, visible } = props;
+      const { placement, visible, offset } = props;
 
-      if (!visible) {
-        return {
-          top: 0,
-          left: 0,
-        };
-      }
+      if (!visible) return originOffset;
 
       let target = this.getRootNodeDOM();
-      let offset = getOffsetRectRelativeToCustomParent(this.$el, target, placement);
-
-      return offset;
+      return getOffsetRectRelativeToCustomParent(this.$el, target, placement, offset);
     },
 
     getArrowOffset() {
       const { $props: props, $el } = this;
-      const { arrowWidth, arrowShadowWidth, placement, visible } = props;
-      const arrowRotateWidth = Math.sqrt(arrowWidth * arrowWidth * 2) + arrowShadowWidth * 2;
+      const { arrowWidth, arrowShadowWidth, placement } = props;
 
-      let elementRect = getBoundingClientRect($el);
-
-      let arrowOutterOffset = {},
-        arrowInnerOffset = {};
-
-      arrowOutterOffset.width = arrowRotateWidth;
-
-      if (['right', 'left'].indexOf(placement) !== -1) {
-        arrowOutterOffset.top = elementRect.height / 2 - arrowRotateWidth / 2;
-        if (placement === 'left') {
-          arrowOutterOffset.left = elementRect.width;
-          arrowInnerOffset.translate = `translateX(-${arrowRotateWidth / 2}px)`;
-        } else {
-          arrowOutterOffset.left = -arrowRotateWidth;
-          arrowInnerOffset.translate = `translateX(${arrowRotateWidth / 2}px)`;
-        }
-      } else {
-        arrowOutterOffset.left = elementRect.width / 2 - arrowRotateWidth / 2;
-        if (placement === 'top') {
-          arrowOutterOffset.top = elementRect.height;
-          arrowInnerOffset.translate = `translateY(${-arrowRotateWidth / 2}px)`;
-        } else {
-          arrowOutterOffset.top = -arrowRotateWidth;
-          arrowInnerOffset.translate = `translateY(${arrowRotateWidth / 2}px)`;
-        }
-      }
-
-      let arrowOffsets = {
-        arrowOutterOffset,
-        arrowInnerOffset,
-      };
-
-      console.log(arrowOffsets);
-      return arrowOffsets;
+      return getArrowOffsetByPlacement(arrowWidth, arrowShadowWidth, $el, placement);
     },
 
     applyStyle(offset, arrowOffset) {
@@ -90,7 +60,6 @@ export default {
       const popupEl = this.$el;
       const arrowEl = this.getArrowNodeDOM();
       const arrowInnerEl = arrowEl.childNodes[0];
-      console.log('arrowEl', arrowEl, arrowInnerEl);
       const transformOrigin = getTransformOrigin(popupEl, placement);
 
       popupEl.style.top = -offset.top + 'px';
@@ -100,18 +69,52 @@ export default {
       arrowEl.style.top = arrowOffset.arrowOutterOffset.top + 'px';
       arrowEl.style.left = arrowOffset.arrowOutterOffset.left + 'px';
 
-      console.log(`rotate(45deg) ${arrowOffset.arrowInnerOffset.translate}px`);
       arrowInnerEl.style.transform = `${arrowOffset.arrowInnerOffset.translate} rotate(45deg)`;
     },
 
     getPopupElement() {
       const { $props: props, $slots } = this;
-      const { visible, prefixCls } = props;
+      const { visible, prefixCls, transitionName } = props;
+
+      let transitionProps = {
+        appear: true,
+        css: false,
+        name: transitionName,
+      };
+
+      const transitionEvent = {
+        onBeforeEnter: () => {
+          // el.style.display = el.__vOriginalDisplay
+          // this.alignInstance.forceAlign();
+        },
+        onEnter: (el, done) => {
+          // render 后 vue 会移除通过animate动态添加的 class导致动画闪动，延迟两帧添加动画class，可以进一步定位或者重写 transition 组件
+          this.$nextTick(() => {
+            this.$nextTick(() => {
+              this.domEl = el;
+              animate(el, `${transitionName}-enter`, done);
+            });
+          });
+        },
+        onBeforeLeave: () => {
+          this.domEl = null;
+        },
+        onLeave: (el, done) => {
+          animate(el, `${transitionName}-leave`, done);
+        },
+        onAfterLeave: () => {
+          this.applyStyle(originOffset, this.getArrowOffset());
+        },
+      };
+
+      transitionProps = { ...transitionProps, ...transitionEvent };
 
       return (
-        <div v-show={visible} class={prefixCls}>
-          <div class={`${prefixCls}-content`}>{$slots.default && $slots.default()}</div>
-        </div>
+        <Transition {...transitionProps}>
+          <div v-show={visible} class={prefixCls}>
+            <div class={`${prefixCls}-content`}>{$slots.default && $slots.default()}</div>
+          </div>
+        </Transition>
       );
     },
   },
@@ -160,13 +163,13 @@ function getBoundingClientRect(element) {
   };
 }
 
-function getOffsetRectRelativeToCustomParent(element, parent, placement) {
+function getOffsetRectRelativeToCustomParent(element, parent, placement, offset) {
   let elementRect = getBoundingClientRect(element);
   let parentRect = getBoundingClientRect(parent);
 
   let referenceOffset = {};
 
-  let offset = {
+  let relativeOffset = {
     top: elementRect.top - parentRect.top,
     left: elementRect.left - parentRect.left,
     bottom: elementRect.top - parentRect.top + elementRect.height,
@@ -174,22 +177,59 @@ function getOffsetRectRelativeToCustomParent(element, parent, placement) {
   };
 
   if (['right', 'left'].indexOf(placement) !== -1) {
-    referenceOffset.top = offset.top + elementRect.height / 2 - parentRect.height / 2;
+    referenceOffset.top = relativeOffset.top + elementRect.height / 2 - parentRect.height / 2;
     if (placement === 'left') {
-      referenceOffset.left = offset.right;
+      referenceOffset.left = relativeOffset.right + offset;
     } else {
-      referenceOffset.left = offset.left - parentRect.width;
+      referenceOffset.left = relativeOffset.left - parentRect.width - offset;
     }
   } else {
-    referenceOffset.left = offset.left + elementRect.width / 2 - parentRect.width / 2;
+    referenceOffset.left = relativeOffset.left + elementRect.width / 2 - parentRect.width / 2;
     if (placement === 'top') {
-      referenceOffset.top = offset.bottom;
+      referenceOffset.top = relativeOffset.bottom + offset;
     } else {
-      referenceOffset.top = offset.top - parentRect.height;
+      referenceOffset.top = relativeOffset.top - parentRect.height - offset;
     }
   }
 
   return referenceOffset;
+}
+
+function getArrowOffsetByPlacement(arrowWidth, arrowShadowWidth, element, placement) {
+  const arrowRotateWidth = Math.sqrt(arrowWidth * arrowWidth * 2) + arrowShadowWidth * 2;
+  const elementRect = getBoundingClientRect(element);
+
+  let arrowOutterOffset = {},
+    arrowInnerOffset = {};
+
+  arrowOutterOffset.width = arrowRotateWidth;
+
+  if (['right', 'left'].indexOf(placement) !== -1) {
+    arrowOutterOffset.top = elementRect.height / 2 - arrowRotateWidth / 2;
+    if (placement === 'left') {
+      arrowOutterOffset.left = elementRect.width;
+      arrowInnerOffset.translate = `translateX(-${arrowRotateWidth / 2}px)`;
+    } else {
+      arrowOutterOffset.left = -arrowRotateWidth;
+      arrowInnerOffset.translate = `translateX(${arrowRotateWidth / 2}px)`;
+    }
+  } else {
+    arrowOutterOffset.left = elementRect.width / 2 - arrowRotateWidth / 2;
+    if (placement === 'top') {
+      arrowOutterOffset.top = elementRect.height;
+      arrowInnerOffset.translate = `translateY(${-arrowRotateWidth / 2}px)`;
+    } else {
+      arrowOutterOffset.top = -arrowRotateWidth;
+      arrowInnerOffset.translate = `translateY(${arrowRotateWidth / 2}px)`;
+    }
+  }
+
+  let arrowOffsets = {
+    arrowOutterOffset,
+    arrowInnerOffset,
+  };
+
+  return arrowOffsets;
 }
 
 function getTransformOrigin(element, placement) {

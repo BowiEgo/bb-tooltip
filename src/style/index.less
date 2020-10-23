@@ -1,18 +1,16 @@
-@border-radius-base: 2px;
+@import './theme.less';
+@import './motion.less';
+@import './zoom.less';
 
-// Tooltip
-@tooltip-color: #fff;
-// Tooltip background color
-@tooltip-bg: rgba(0, 0, 0, 0.75);
-@tooltip-arrow-width: 5px;
-@tooltip-arrow-shadow-width: 3px;
-@tooltip-arrow-rotate-width: sqrt(@tooltip-arrow-width * @tooltip-arrow-width * 2) +
-  @tooltip-arrow-shadow-width * 2;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
 
-// Shadow
-@shadow-color: rgba(0, 0, 0, 0.15);
-@box-shadow-base: @shadow-1-down;
-@shadow-1-down: 0 2px 8px @shadow-color;
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 
 *,
 :after,

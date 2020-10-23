@@ -19,9 +19,8 @@ export default () => ({
     'rightBottom',
   ]).def('bottom'),
   transitionName: PropTypes.string.def('zoom-big-fast'),
-
-  overlayStyle: PropTypes.object.def(() => ({})),
-  overlayClassName: PropTypes.string,
+  offset: PropTypes.number.def(10),
+  backgroundColor: PropTypes.string,
   prefixCls: PropTypes.string.def('tooltip'),
   mouseEnterDelay: PropTypes.number.def(0.1),
   mouseLeaveDelay: PropTypes.number.def(0.1),

@@ -1,5 +1,5 @@
 import '@babel/polyfill';
-import '../src/style.js';
+import '../src/style/style.js';
 import { createApp, version } from 'vue';
 import App from './App.vue';
 import Tooltip from '@/Tooltip';

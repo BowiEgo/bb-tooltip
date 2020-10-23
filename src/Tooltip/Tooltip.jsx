@@ -73,12 +73,15 @@ export default {
     },
 
     getPopupElement() {
-      const { prefixCls, tipId } = this.$props;
+      const { prefixCls, tipId, backgroundColor } = this.$props;
       return [
         <div class={`${prefixCls}-arrow`} key="arrow" ref="arrow">
-          <div class={`${prefixCls}-arrow-inner`}></div>
+          <div
+            class={`${prefixCls}-arrow-inner`}
+            style={{ backgroundColor: backgroundColor }}
+          ></div>
         </div>,
-        <div class={`${prefixCls}-inner`} id={tipId}>
+        <div class={`${prefixCls}-inner`} id={tipId} style={{ backgroundColor: backgroundColor }}>
           {this.$slots.title()}
         </div>,
       ];
