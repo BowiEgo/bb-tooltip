@@ -14,7 +14,7 @@
       <span style="margin-top: 100px; font-size: 32px">下下下下下</span>
     </tooltip>
 
-    <tooltip placement="left" backgroundColor="#2196f3">
+    <tooltip placement="left" backgroundColor="#2196f3" :arrowWidth="10" :default-visible="true">
       <template v-slot:title>
         <span>左左左左左</span>
       </template>
@@ -38,6 +38,7 @@ export default {
 <style lang="less" scoped>
 span {
   display: inline-block;
-  margin: 20px 40px;
+  font-size: 12px;
+  margin: 10px 12px;
 }
 </style>

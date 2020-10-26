@@ -3,7 +3,7 @@ const triggerType = PropTypes.oneOf(['hover', 'focus', 'click', 'contextmenu']);
 export default () => ({
   trigger: PropTypes.oneOfType([triggerType, PropTypes.arrayOf(triggerType)]).def('hover'),
   visible: PropTypes.bool,
-  defaultVisible: PropTypes.bool,
+  defaultVisible: PropTypes.bool.def(false),
   placement: PropTypes.oneOf([
     'top',
     'left',

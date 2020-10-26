@@ -36,14 +36,16 @@ export default {
 
   mounted() {
     this.updatedCal();
-    console.log(this.placement);
+    this.open();
   },
 
   methods: {
     updatedCal() {
       let document = returnDocument();
 
-      addEventListener(document, 'mousedown', this.onDocumentClick);
+      if (!this.defaultVisible) {
+        addEventListener(document, 'mousedown', this.onDocumentClick);
+      }
     },
 
     getPopupContainer() {

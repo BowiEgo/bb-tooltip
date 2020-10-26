@@ -55,7 +55,7 @@ export default {
 
     applyStyle(offset, arrowOffset) {
       const { $props: props } = this;
-      const { placement } = props;
+      const { placement, arrowWidth } = props;
 
       const popupEl = this.$el;
       const arrowEl = this.getArrowNodeDOM();
@@ -68,8 +68,12 @@ export default {
 
       arrowEl.style.top = arrowOffset.arrowOutterOffset.top + 'px';
       arrowEl.style.left = arrowOffset.arrowOutterOffset.left + 'px';
+      arrowEl.style.width = arrowOffset.arrowOutterOffset.width + 'px';
+      arrowEl.style.height = arrowOffset.arrowOutterOffset.width + 'px';
 
       arrowInnerEl.style.transform = `${arrowOffset.arrowInnerOffset.translate} rotate(45deg)`;
+      arrowInnerEl.style.width = arrowWidth + 'px';
+      arrowInnerEl.style.height = arrowWidth + 'px';
     },
 
     getPopupElement() {

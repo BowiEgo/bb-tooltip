@@ -1,14 +1,7 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
-const VueLoaderPlugin = require('vue-loader/dist/plugin').default;
-const DashboardPlugin = require('webpack-dashboard/plugin');
 
 module.exports = {
-  mode: 'development',
-  entry: {
-    app: './examples/index.js',
-  },
   module: {
     rules: [
       {
@@ -107,27 +100,4 @@ module.exports = {
     },
     extensions: ['.js', '.jsx', '.vue', '.md'],
   },
-  devServer: {
-    historyApiFallback: {
-      rewrites: [{ from: /./, to: '/index.html' }],
-    },
-    disableHostCheck: true,
-    hot: true,
-    open: true,
-  },
-  devtool: 'cheap-module-eval-source-map',
-  plugins: [
-    new MiniCssExtractPlugin({
-      filename: '[name].css',
-    }),
-    new HtmlWebpackPlugin({
-      template: 'examples/index.html',
-      filename: 'index.html',
-      inject: true,
-    }),
-    new VueLoaderPlugin(),
-    new DashboardPlugin({
-      port: 3001,
-    }),
-  ],
 };
